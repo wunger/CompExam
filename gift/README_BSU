@@ -1,0 +1,56 @@
+William Unger
+GIFT code
+Comprehensive exam
+
+to compile call make and it will produce a gift exectable assuming you 
+have gcc installed
+
+to encrypt data run ./gift -e -f -k <KeyFile> -t <Plaintext>
+
+
+Ex.
+./gift -e -f -k key128.txt -t plain.txt
+
+Output:
+---------------------------------------
+PRESENT Commandline Tool v2.1
+Thomas Siebert, thomas.siebert@rub.de
+---------------------------------------
+
+Starting values
+Plaintext: badc0ffeebadf00d 
+Given Key (128bit): 1234567887654321 abab1234dfec2f3c
+
+Starting encryption...
+Resulting Cipher: b302e568f32b027a 
+
+
+To change verbosity add -v2 to the call of gift
+
+Example
+
+./gift -e -f -k key128.txt -t plain.txt -v2
+
+
+It will add all intermeditary states
+
+Decryption works the same as encryptin except -d is used and the text file is ciphertext not plaintext
+
+Example
+
+./gift -d -f -k key128.txt -t cipher.txt
+
+Output:
+
+---------------------------------------
+PRESENT Commandline Tool v2.1
+Thomas Siebert, thomas.siebert@rub.de
+---------------------------------------
+
+Starting values
+Ciphertext: b302e568f32b027a 
+Given Key (128bit): 1234567887654321 abab1234dfec2f3c
+
+Starting decryption...
+Resulting Plaintext: badc0ffeebadf00d 
+[wunger@localhost gift]$ 
