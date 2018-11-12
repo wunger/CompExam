@@ -23,10 +23,12 @@ struct Options
 	_Bool Error;
 	_Bool Mode;
 	_Bool KeySize80;
+	_Bool BlockSize64;
 	uint8_t Verbose;
 	uint64_t KeyHigh;
 	uint64_t KeyLow;
 	uint64_t Text;
+	uint64_t TextHigh;
 	uint16_t Rounds;
 };
 
