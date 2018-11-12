@@ -249,6 +249,73 @@ uint64_t* key_schedule( uint64_t key_high, uint64_t key_low, uint16_t Rounds, _B
    return subkey;
 }
 
+uint64_t* key_schedule128( uint64_t key_high, uint64_t key_low, uint16_t Rounds, _Bool Output )
+{
+	uint64_t temp64;
+	uint64_t i;
+
+   uint64_t *subkey = (uint64_t *)malloc(Rounds*2*sizeof(uint64_t));
+   
+   uint16_t keyState[8];
+   
+   for( i=0; i < 4; i++)
+   {
+       keyState[i] = ((key_low >> (i*16)) & 0xffff);
+       keyState[i+4] = ((key_high >> (i*16)) & 0xffff);//Initlize 128 bit key into 8 16-bit keystates
+   }
+   for ( i=0; i<Rounds; i++)
+   {
+       subkey[2*i] = 0;
+       subkey[(2*i)+1] = 0;
+       uint32_t U = 0;
+       uint32_t V = 0;
+       uint8_t roundConstant = Constants[i];
+       
+       U = (keyState[5] << 16) | (keyState[4]);
+       V = (keyState[1] << 16) | (keyState[0]);
+       
+       int j;
+       
+       for (j = 0; j < 16; j++)
+       {
+           subkey[2*i] = setBit(subkey[2*i],getBit(U,j),(4*j+1)); 
+           subkey[2*i] = setBit(subkey[2*i],getBit(V,j),(4*j));  
+           //Putting keystate into the subkey
+           subkey[2*i+1] = setBit(subkey[2*i],getBit(U,j+16),(4*j+1)); 
+           subkey[2*i+1] = setBit(subkey[2*i],getBit(V,j+16),(4*j)); 
+       }
+       
+       for(j = 0;j < 6; j++)
+       {
+       subkey[2*i] = setBit(subkey[i],getBit(Constants[i],j),ConstantsLocation[j]);
+       //The addition of the round constants of the round key
+       }
+       subkey[2*i+1] = setBit(subkey[i],0x01,63); //always having 1 on the blockSize-1 round key
+                    
+       
+       
+       uint16_t keyStateUpdated[8];
+       keyStateUpdated [7] = rotateRight16Bit(keyState[1], 2);
+       keyStateUpdated [6] = rotateRight16Bit(keyState[0], 12);
+       keyStateUpdated [5] = keyState[7];
+       keyStateUpdated [4] = keyState[6];
+       keyStateUpdated [3] = keyState[5];
+       keyStateUpdated [2] = keyState[4];
+       keyStateUpdated [1] = keyState[3];
+       keyStateUpdated [0] = keyState[2];
+                    
+       for(j = 0;j < 8; j++)
+       {
+           keyState[j] = keyStateUpdated[j];
+       }
+                    
+       
+   }
+   
+    
+   
+    return subkey;
+}
 
 
 
