@@ -80,19 +80,24 @@ int main( int argc, char ** const argv )
 	if ( !Opt.Error )
 	{
 		uint64_t *subkey;
+        
+        if( Opt.BlockSize64)
+            
+        {
+            
 
-		if ( Opt.Mode == Encrypt_Mode )
-		{
-			// Put out Values
-			if ( Opt.Verbose != 0 )
-			{
-				printf( "Starting values\n" );
-				printf( "Plaintext: %016"PRIx64" \n", Opt.Text);
-				if (Opt.KeySize80) printf( "Given Key (80bit): %016"PRIx64" %04"PRIx64"\n\n", Opt.KeyHigh, (Opt.KeyLow&0xFFFF) );
-				else printf( "Given Key (128bit): %016"PRIx64" %016"PRIx64"\n\n", Opt.KeyHigh, Opt.KeyLow );
-			}
+            if ( Opt.Mode == Encrypt_Mode )
+            {
+                // Put out Values
+                if ( Opt.Verbose != 0 )
+                {
+                    printf( "Starting values\n" );
+                    printf( "Plaintext: %016"PRIx64" \n", Opt.Text);
+                    if (Opt.KeySize80) printf( "Given Key (80bit): %016"PRIx64" %04"PRIx64"\n\n", Opt.KeyHigh, (Opt.KeyLow&0xFFFF) );
+                    else printf( "Given Key (128bit): %016"PRIx64" %016"PRIx64"\n\n", Opt.KeyHigh, Opt.KeyLow );
+                }
 
-			// Generate Subkeys
+                // Generate Subkeys
 			subkey=key_schedule( Opt.KeyHigh, Opt.KeyLow, Opt.Rounds, Opt.KeySize80, (Opt.Verbose>1) );
 
 			// Start Encryption
@@ -124,6 +129,13 @@ int main( int argc, char ** const argv )
 		}
 
 		free(subkey);
+        }
+        
+        else
+        {
+        
+            printf("128-bit option reached\n");
+        }
 
 	}
 

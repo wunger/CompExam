@@ -49,8 +49,9 @@ void comline_fetch_options( struct Options * sOpt, int argc, char ** const argv 
 
 	sOpt->Error = 0;
 	sOpt->Verbose = 1;
+	sOpt->BlockSize64=1;
 
-	while ((c = getopt(argc, argv, "defv:r:k:t:")) != -1)								//Cycle through Options
+	while ((c = getopt(argc, argv, "defv:r:k:t:b:")) != -1)								//Cycle through Options
 	{
 		switch (c)																												//set flags
 		{
@@ -90,6 +91,9 @@ void comline_fetch_options( struct Options * sOpt, int argc, char ** const argv 
 				if ( Opt_Text != NULL ) sOpt->Error = 1;
 				else Opt_Text = optarg;
 				break;
+            case 'b':
+                if ( strcmp(optarg, "128") == 0) sOpt->BlockSize64=0;
+                break;
 			case '?':
 				sOpt->Error = 1;
 				break;
@@ -147,7 +151,22 @@ void comline_fetch_options( struct Options * sOpt, int argc, char ** const argv 
 						sOpt->KeySize80=1;
 						}
 					else sOpt->Error=1;
-					if ( fscanf( TextFile, "%016"SCNx64"", &sOpt->Text )  ==EOF ) sOpt->Error=1;
+					fseek(TextFile,0,SEEK_END);
+					if ((ftell(TextFile))>=32)
+					{
+                        fseek(TextFile,0,SEEK_SET);
+                        printf("reading in 128-bits\n");
+						if ( fscanf( TextFile, "%016"SCNx64"", &sOpt->TextHigh )==0 ) sOpt->Error=1;
+						if ( fscanf( TextFile, "%016"SCNx64"", &sOpt->Text )==0 ) sOpt->Error=1;
+						sOpt->BlockSize64=0;
+					}
+					else 
+                        { 
+                        printf("reading in 64-bits\n");
+                        fseek(TextFile,0,SEEK_SET);
+                        if ( fscanf( TextFile, "%016"SCNx64"", &sOpt->Text )  ==EOF ) sOpt->Error=1;
+                        sOpt->BlockSize64=1;
+                        }
 				}
 			else sOpt->Error=1;
 			if (!(KeyFile==NULL)) fclose(KeyFile);
