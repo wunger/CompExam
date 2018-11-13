@@ -52,9 +52,10 @@
 // Function prototypes
 //----------------------------------
 uint64_t encrypt( uint64_t, uint64_t*, uint16_t, _Bool );
+uint64_t* encrypt128(uint64_t, uint64_t, uint64_t*,uint16_t, _Bool);
 uint64_t decrypt( uint64_t, uint64_t*, uint16_t, _Bool );
 uint64_t* key_schedule( uint64_t, uint64_t, uint16_t, _Bool, _Bool );
-
+uint64_t* key_schedule128( uint64_t, uint64_t, uint16_t,_Bool );
 
 //----------------------------------
 // Start of code
@@ -63,6 +64,7 @@ int main( int argc, char ** const argv )
 {
 	// Initialize variables
 	uint64_t result;
+    uint64_t* result128;
 	struct Options Opt;
 
 	// Get Commandline Options
@@ -134,7 +136,30 @@ int main( int argc, char ** const argv )
         else
         {
         
+            subkey =  key_schedule128( Opt.KeyHigh, Opt.KeyLow, Opt.Rounds, (Opt.Verbose>1) );
+            
             printf("128-bit option reached\n");
+            
+            if ( Opt.Mode == Encrypt_Mode )
+            {
+                printf("Encypt mode 128-bit block reached.\n");
+                
+                if ( Opt.Verbose != 0 )
+                {
+                    printf( "Starting values\n" );
+                    printf( "Plaintext: %016"PRIx64" %016"PRIx64" \n", Opt.TextHigh, Opt.Text);
+                    if (Opt.KeySize80) printf( "Given Key (80bit): %016"PRIx64" %04"PRIx64"\n\n", Opt.KeyHigh, (Opt.KeyLow&0xFFFF) );
+                    else printf( "Given Key (128bit): %016"PRIx64" %016"PRIx64"\n\n", Opt.KeyHigh, Opt.KeyLow );
+                }
+                
+                if ( Opt.Verbose != 0 )	printf( "Starting encryption...\n" );
+                result128=encrypt128(Opt.TextHigh, Opt.Text, subkey, Opt.Rounds, (Opt.Verbose>1) );
+                if ( Opt.Verbose != 0 )	printf( "Resulting Cipher: %016"PRIx64" %016"PRIx64" \n\n", result128[1],result128[0]);
+                else printf( "%016"PRIx64" %016"PRIx64"\n", result128[1],result128[0]);
+            }
+            
+            free(subkey);
+            
         }
 
 	}
@@ -255,7 +280,6 @@ uint64_t* key_schedule128( uint64_t key_high, uint64_t key_low, uint16_t Rounds,
 	uint64_t i;
 
    uint64_t *subkey = (uint64_t *)malloc(Rounds*2*sizeof(uint64_t));
-   
    uint16_t keyState[8];
    
    for( i=0; i < 4; i++)
@@ -271,8 +295,8 @@ uint64_t* key_schedule128( uint64_t key_high, uint64_t key_low, uint16_t Rounds,
        uint32_t V = 0;
        uint8_t roundConstant = Constants[i];
        
-       U = (keyState[5] << 16) | (keyState[4]);
-       V = (keyState[1] << 16) | (keyState[0]);
+       U = ((uint32_t)keyState[5] << 16) | (uint32_t)(keyState[4]);
+       V = ((uint32_t)keyState[1] << 16) | (uint32_t)(keyState[0]);
        
        int j;
        
@@ -287,10 +311,10 @@ uint64_t* key_schedule128( uint64_t key_high, uint64_t key_low, uint16_t Rounds,
        
        for(j = 0;j < 6; j++)
        {
-       subkey[2*i] = setBit(subkey[i],getBit(Constants[i],j),ConstantsLocation[j]);
+       subkey[2*i] = setBit(subkey[2*i],getBit(Constants[i],j),ConstantsLocation[j]);
        //The addition of the round constants of the round key
        }
-       subkey[2*i+1] = setBit(subkey[i],0x01,63); //always having 1 on the blockSize-1 round key
+       subkey[2*i+1] = setBit(subkey[2*i+1],0x01,63); //always having 1 on the blockSize-1 round key
                     
        
        
@@ -312,7 +336,11 @@ uint64_t* key_schedule128( uint64_t key_high, uint64_t key_low, uint16_t Rounds,
        
    }
    
-    
+   for ( i=0; i<Rounds; i++)
+   {
+       printf("Round %u round key %016"PRIx64" %016"PRIx64 "\n\n",i, subkey[(2*(i))+1], subkey[(2*(i))]);
+   }
+     
    
     return subkey;
 }
@@ -337,6 +365,8 @@ uint64_t encrypt( uint64_t in, uint64_t *subkey, uint16_t Rounds, _Bool Roundwis
 		#define SboxNr temp
 		#define PBit temp
 
+        
+        
 		if (Roundwise) v_roundstart(RoundNr, subkey[RoundNr-1]);
 
 
@@ -383,7 +413,104 @@ uint64_t encrypt( uint64_t in, uint64_t *subkey, uint16_t Rounds, _Bool Roundwis
 
 	return text;
 
-}																															//End encryption
+}				
+
+uint64_t* encrypt128( uint64_t inHigh, uint64_t inLow, uint64_t *subkey, uint16_t Rounds, _Bool Roundwise )
+
+{
+    uint64_t *retVal = (uint64_t *)malloc(2*sizeof(uint64_t));
+    
+    //printf("rounds %u\n",Rounds);
+    
+    //note outHigh is the same is inHigh the same goes with low.
+    #define outHigh inHigh
+    #define outLow inLow
+	uint16_t RoundNr;
+	uint64_t textHigh;
+    uint64_t textLow;
+    
+    for ( RoundNr=1; RoundNr<Rounds; RoundNr++)
+    {
+        
+        uint16_t tempHigh;
+        uint16_t tempLow;
+		uint16_t SboxNr;
+        #define SboxNrLow tempLow
+        uint16_t Pbit;
+        
+        printf("Round %u round key %016"PRIx64" %016"PRIx64 "\n\n", RoundNr, subkey[2*(RoundNr-1)+1], subkey[2*(RoundNr-1)]);
+        
+        textLow = inLow ^ subkey[2*(RoundNr-1)];
+        textHigh = inHigh ^ subkey[2*(RoundNr-1)+1];
+        
+        for ( SboxNr=0; SboxNr<16; SboxNr++ )
+        {
+            uint16_t SboxValHigh;
+            uint16_t SboxValLow;
+
+			SboxValHigh	=	textHigh & 0x0F;	
+            SboxValLow	=	textLow & 0x0F;
+            //get lowest nibble
+			textHigh &=	0xFFFFFFFFFFFFFFF0;	
+            textLow &=	0xFFFFFFFFFFFFFFF0;	//kill lowest nibble
+            
+            
+			textHigh |=	Sbox[SboxValHigh];	
+            textLow |=	Sbox[SboxValLow];	//put new value to lowest nibble (sbox)
+            
+            
+			textHigh = rotate4l_64(textHigh);	
+            textLow = rotate4l_64(textLow);//next(rotate by one nibble)
+            
+        }
+        
+        outHigh = 0;
+        outLow = 0;
+        
+        uint8_t bitNum;
+        
+        
+        //The four cases that they could permute differnetly form text to output
+        for ( PBit = 0; PBit<128; PBit++ )
+        {
+            if(PBit < 64)
+            {
+                uint8_t bitNum = Pbox[Pbit];
+                if(bitNum < 64)
+                {
+                    outLow = setBit(outLow,getBit(textLow,Pbit),bitNum);
+                }
+                else
+                {
+                    outHigh = setBit(outHigh,getBit(textLow,Pbit),bitNum-64);
+                }
+                
+            }
+            else
+            {
+                if(bitNum < 64)
+                {
+                    outLow = setBit(outLow,getBit(textHigh,Pbit-64),bitNum);
+                }
+                else
+                {
+                    outHigh =        setBit(outHigh,getBit(textHigh,Pbit-64),bitNum-64);             
+                }
+                
+                
+            }
+        }
+    }
+    
+    retVal[0] = inLow ^ subkey[2*(RoundNr-1)];
+    retVal[1] = inHigh ^ subkey[2*(RoundNr-1)+1];
+    
+    
+    return retVal;
+    
+}
+
+//End encryption
 
 
 //----------------------------------
