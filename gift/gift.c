@@ -178,6 +178,7 @@ int main( int argc, char ** const argv )
             }
             
             free(subkey);
+            free(result128);
             
         }
 
