@@ -281,8 +281,8 @@ uint64_t* key_schedule128( uint64_t key_high, uint64_t key_low, uint16_t Rounds,
            subkey[2*i] = setBit(subkey[2*i],getBit(U,j),(4*j+1)); 
            subkey[2*i] = setBit(subkey[2*i],getBit(V,j),(4*j));  
            //Putting keystate into the subkey
-           subkey[2*i+1] = setBit(subkey[2*i],getBit(U,j+16),(4*j+1)); 
-           subkey[2*i+1] = setBit(subkey[2*i],getBit(V,j+16),(4*j)); 
+           subkey[2*i+1] = setBit(subkey[2*i+1],getBit(U,j+16),(4*j+1)); 
+           subkey[2*i+1] = setBit(subkey[2*i+1],getBit(V,j+16),(4*j)); 
        }
        
        for(j = 0;j < 6; j++)
