@@ -11,9 +11,11 @@
 // Function prototypes
 //----------------------------------
 void v_enc_start(uint64_t);
+void v_enc_start128(uint64_t,uint64_t);
 void v_enc_final(uint64_t, uint64_t);
 void v_enc_final128(uint64_t,uint64_t, uint64_t, uint64_t);
 void v_dec_start(uint64_t);
+void v_dec_start128(uint64_t,uint64_t);
 void v_roundstart(uint16_t, uint64_t);
 void v_roundstart128(uint16_t, uint64_t, uint64_t);
 void v_after_xor(uint64_t);
@@ -42,19 +44,32 @@ void v_key_start(void);
 void v_enc_start(uint64_t v_plain)
 {
 	printf( "************************************\n" );
-	printf( "Verbose output of PRESENT-encryption\n" );
+	printf( "Verbose output of GIFT-encryption\n" );
 	printf( "************************************\n\n" );
 	printf( "Given Plaintext: %016"PRIx64" \n\n", v_plain);
 }
-
+void v_enc_start128(uint64_t v_plainHigh, uint64_t v_plainLow)
+{
+    printf( "************************************\n" );
+	printf( "Verbose output of GIFT-encryption\n" );
+	printf( "************************************\n\n" );
+	printf( "Given Ciphertext: %016"PRIx64" %016"PRIx64" \n", v_plainHigh, v_plainLow);
+}
 void v_dec_start(uint64_t v_plain)
 {
 	printf( "************************************\n" );
-	printf( "Verbose output of PRESENT-decryption\n" );
+	printf( "Verbose output of GIFT-decryption\n" );
 	printf( "************************************\n\n" );
 	printf( "Given Ciphertext: %016"PRIx64" \n", v_plain);
 }
 
+void v_dec_start128(uint64_t v_plainHigh, uint64_t v_plainLow)
+{
+    printf( "************************************\n" );
+	printf( "Verbose output of GIFT-decryption\n" );
+	printf( "************************************\n\n" );
+	printf( "Given Ciphertext: %016"PRIx64" %016"PRIx64" \n", v_plainHigh, v_plainLow);
+}
 void v_roundstart(uint16_t v_round, uint64_t v_key)
 {
 	printf( "--------------------------------------\n" );

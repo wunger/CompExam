@@ -448,6 +448,8 @@ uint64_t* encrypt128( uint64_t inHigh, uint64_t inLow, uint64_t *subkey, uint16_
 	uint64_t textHigh;
     uint64_t textLow;
     
+    if (Roundwise) v_enc_start128(inHigh,inLow);
+    
     for ( RoundNr=1; RoundNr<Rounds; RoundNr++)
     {
         
@@ -615,14 +617,18 @@ uint64_t* decrypt128( uint64_t inHigh, uint64_t inLow, uint64_t *subkey, uint16_
 	uint64_t textHigh;
     uint64_t textLow;
     uint16_t temp;
+    if (Roundwise) v_dec_start128(inHigh,inLow);
     
     //XOR operation
     
     for ( RoundNr=1; RoundNr<=Rounds; RoundNr++)
     {
+        if (Roundwise) v_roundstart128(RoundNr, subkey[(2*Rounds)-(2*(RoundNr))+1],subkey[(2*Rounds)-(2*(RoundNr))]);
         //printf("Decyrption key low:%i key high %i\n",((2*Rounds)-(2*(RoundNr))),(2*Rounds)-(2*(RoundNr))+1);
         textHigh = inHigh ^ subkey[(2*Rounds)-(2*(RoundNr))+1];
         textLow = inLow ^ subkey[(2*Rounds)-(2*(RoundNr))];
+        
+        if (Roundwise) v_after_xor128(textHigh, textLow);
         
         //In the last round nly the textHigh and textLow are used that 
         //is why retVal gets text rather tahn out.
@@ -659,6 +665,7 @@ uint64_t* decrypt128( uint64_t inHigh, uint64_t inLow, uint64_t *subkey, uint16_
                 
             }
         }
+        if (Roundwise) v_after_p128(outHigh,outLow);
         
         for ( SboxNr=0; SboxNr<16; SboxNr++ )
         {
@@ -679,7 +686,9 @@ uint64_t* decrypt128( uint64_t inHigh, uint64_t inLow, uint64_t *subkey, uint16_
             outLow = rotate4l_64(outLow);//next(rotate by one nibble)
             
         }
+        if (Roundwise) v_after_s128(outHigh,outLow);
     }
+    if (Roundwise) v_final();
     
     retVal[1]=textHigh;
     retVal[0]=textLow;
