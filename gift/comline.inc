@@ -108,26 +108,7 @@ void comline_fetch_options( struct Options * sOpt, int argc, char ** const argv 
 
 	else
 	{
-		// Handle Rounds Parameter
-		if ( Opt_Rounds != NULL )																					//if Round Param there...
-		{
-			if (strlen(Opt_Rounds) < 6 )																			//check length
-			{
-				uint32_t Rounds;
-				sscanf(Opt_Rounds, "%5"SCNu32"", &Rounds);											//get round no.
-				if ( ( Rounds > 65534 ) || Rounds==0 ) sOpt->Error=1;						//check 0<Rounds<65535
-				else sOpt->Rounds = Rounds;																			//override roundno.
-			}
-			else sOpt->Error=1;
-		}
-		else sOpt->Rounds=28;																							//...else use standard
-
-		// Check if decrypt or encrypt mode
-		if ( Opt_Encrypt ) sOpt->Mode = Encrypt_Mode;
-		else sOpt->Mode = Decrypt_Mode;
-
-
-		// Read key and text (file mode)
+		
 		if ( Opt_File )
 		{
 			KeyFile=fopen(Opt_Key, "r");
@@ -197,5 +178,29 @@ void comline_fetch_options( struct Options * sOpt, int argc, char ** const argv 
 				sscanf( Opt_Text, "%016"SCNx64"", &sOpt->Text );
 			}
 		}
+		// Handle Rounds Parameter
+		if ( Opt_Rounds != NULL )																					//if Round Param there...
+		{
+			if (strlen(Opt_Rounds) < 6 )																			//check length
+			{
+				uint32_t Rounds;
+				sscanf(Opt_Rounds, "%5"SCNu32"", &Rounds);											//get round no.
+				if ( ( Rounds > 65534 ) || Rounds==0 ) sOpt->Error=1;						//check 0<Rounds<65535
+				else sOpt->Rounds = Rounds;																			//override roundno.
+			}
+			else sOpt->Error=1;
+		}
+		else if (sOpt->BlockSize64)
+            sOpt->Rounds = 28;
+            else sOpt->Rounds = 40;
+            
+            //...else use standard
+
+		// Check if decrypt or encrypt mode
+		if ( Opt_Encrypt ) sOpt->Mode = Encrypt_Mode;
+		else sOpt->Mode = Decrypt_Mode;
+
+
+		// Read key and text (file mode)make 
 	}
 }

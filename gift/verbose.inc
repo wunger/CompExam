@@ -1,6 +1,8 @@
 /*
  * Verbose-Functions for
  * Implementation of PRESENT in C
+ * Edited by William Unger
+ * Impelentation of GIFT in C
  * v2.1, 10/13/2008
  *
  * Thomas Siebert, thomas.siebert@rub.de
