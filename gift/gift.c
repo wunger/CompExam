@@ -168,6 +168,11 @@ int main( int argc, char ** const argv )
 				if (Opt.KeySize80) printf( "Given Key (80bit): %016"PRIx64" %04"PRIx64"\n\n", Opt.KeyHigh, (Opt.KeyLow&0xFFFF) );
 				else printf( "Given Key (128bit): %016"PRIx64" %016"PRIx64"\n\n", Opt.KeyHigh, Opt.KeyLow );
 			}
+			
+			if ( Opt.Verbose != 0 )	printf( "Starting decryption...\n" );
+            result128=decrypt128(Opt.TextHigh, Opt.Text, subkey, Opt.Rounds, (Opt.Verbose>1) );
+                if ( Opt.Verbose != 0 )	printf( "Resulting Plaintext: %016"PRIx64" %016"PRIx64" \n\n", result128[1],result128[0]);
+                else printf( "%016"PRIx64" %016"PRIx64"\n", result128[1],result128[0]);
 
                 
             }
@@ -454,6 +459,7 @@ uint64_t* encrypt128( uint64_t inHigh, uint64_t inLow, uint64_t *subkey, uint16_
         
         textLow = inLow ^ subkey[2*(RoundNr-1)];
         textHigh = inHigh ^ subkey[2*(RoundNr-1)+1];
+        //printf("Encryption round %i key low index:%i key high index %i\n",RoundNr, (2*(RoundNr-1)),(2*(RoundNr-1)+1));
         
         for ( SboxNr=0; SboxNr<16; SboxNr++ )
         {
@@ -514,7 +520,7 @@ uint64_t* encrypt128( uint64_t inHigh, uint64_t inLow, uint64_t *subkey, uint16_
             }
         }
     }
-    
+    //printf("Encryption final XOR round %i key low index:%i key high index %i\n",RoundNr, (2*(RoundNr-1)),(2*(RoundNr-1)+1));
     retVal[0] = inLow ^ subkey[2*(RoundNr-1)];
     retVal[1] = inHigh ^ subkey[2*(RoundNr-1)+1];
     
@@ -607,13 +613,16 @@ uint64_t* decrypt128( uint64_t inHigh, uint64_t inLow, uint64_t *subkey, uint16_
     
     for ( RoundNr=1; RoundNr<=Rounds; RoundNr++)
     {
+        //printf("Decyrption key low:%i key high %i\n",((2*Rounds)-(2*(RoundNr))),(2*Rounds)-(2*(RoundNr))+1);
         textHigh = inHigh ^ subkey[(2*Rounds)-(2*(RoundNr))+1];
         textLow = inLow ^ subkey[(2*Rounds)-(2*(RoundNr))];
-    }
-    
-    //Permtation Bits
-    
-    for ( PBit = 0; PBit<128; PBit++ )
+        
+        //In the last round nly the textHigh and textLow are used that 
+        //is why retVal gets text rather tahn out.
+        outHigh = 0;
+        outLow = 0;
+        
+        for ( PBit = 0; PBit<128; PBit++ )
         {
             uint8_t bitNum = Pbox128Inv[PBit];
             if(PBit < 64)
@@ -643,6 +652,34 @@ uint64_t* decrypt128( uint64_t inHigh, uint64_t inLow, uint64_t *subkey, uint16_
                 
             }
         }
+        
+        for ( SboxNr=0; SboxNr<16; SboxNr++ )
+        {
+            uint16_t SboxValHigh;
+            uint16_t SboxValLow;
+			SboxValHigh	=	outHigh & 0x0F;	
+            SboxValLow	=	outLow & 0x0F;
+            //get lowest nibble
+			outHigh &=	0xFFFFFFFFFFFFFFF0;	
+            outLow &=	0xFFFFFFFFFFFFFFF0;	//kill lowest nibble
+            
+            
+			outHigh |=	SboxInv[SboxValHigh];	
+            outLow |=	SboxInv[SboxValLow];	//put new value to lowest nibble (sbox)
+            
+            
+			outHigh = rotate4l_64(outHigh);	
+            outLow = rotate4l_64(outLow);//next(rotate by one nibble)
+            
+        }
+    }
+    
+    retVal[1]=textHigh;
+    retVal[0]=textLow;
+    
+    
+        
+        
     
     
     
