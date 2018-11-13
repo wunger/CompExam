@@ -456,9 +456,12 @@ uint64_t* encrypt128( uint64_t inHigh, uint64_t inLow, uint64_t *subkey, uint16_
         uint16_t temp;
         
         //printf("Round %u round key %016"PRIx64" %016"PRIx64 "\n\n", RoundNr, subkey[2*(RoundNr-1)+1], subkey[2*(RoundNr-1)]);
+        if (Roundwise) v_roundstart128(RoundNr,subkey[2*(RoundNr-1)+1],subkey[2*(RoundNr-1)+1]);
         
         textLow = inLow ^ subkey[2*(RoundNr-1)];
         textHigh = inHigh ^ subkey[2*(RoundNr-1)+1];
+        
+        if (Roundwise) v_after_xor128(textHigh,textLow);
         //printf("Encryption round %i key low index:%i key high index %i\n",RoundNr, (2*(RoundNr-1)),(2*(RoundNr-1)+1));
         
         for ( SboxNr=0; SboxNr<16; SboxNr++ )
@@ -481,6 +484,7 @@ uint64_t* encrypt128( uint64_t inHigh, uint64_t inLow, uint64_t *subkey, uint16_
             textLow = rotate4l_64(textLow);//next(rotate by one nibble)
             
         }
+        if (Roundwise) v_after_s128(textHigh,textLow);
         
         outHigh = 0;
         outLow = 0;
@@ -519,11 +523,14 @@ uint64_t* encrypt128( uint64_t inHigh, uint64_t inLow, uint64_t *subkey, uint16_
                 
             }
         }
+        if (Roundwise) v_after_p128(inHigh, inLow);
     }
     //printf("Encryption final XOR round %i key low index:%i key high index %i\n",RoundNr, (2*(RoundNr-1)),(2*(RoundNr-1)+1));
     retVal[0] = inLow ^ subkey[2*(RoundNr-1)];
     retVal[1] = inHigh ^ subkey[2*(RoundNr-1)+1];
     
+    
+    if (Roundwise) v_enc_final128(retVal[1],retVal[0], subkey[2*(RoundNr-1)+1],subkey[2*(RoundNr-1)]);
     
     return retVal;
     
