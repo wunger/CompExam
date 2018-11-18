@@ -51,7 +51,7 @@ void comline_fetch_options( struct Options * sOpt, int argc, char ** const argv 
 	sOpt->Verbose = 1;
 	sOpt->BlockSize64=1;
 
-	while ((c = getopt(argc, argv, "defv:r:k:t:b:")) != -1)								//Cycle through Options
+	while ((c = getopt(argc, argv, "defv:r:k:t:")) != -1)								//Cycle through Options
 	{
 		switch (c)																												//set flags
 		{
@@ -91,9 +91,6 @@ void comline_fetch_options( struct Options * sOpt, int argc, char ** const argv 
 				if ( Opt_Text != NULL ) sOpt->Error = 1;
 				else Opt_Text = optarg;
 				break;
-            case 'b':
-                if ( strcmp(optarg, "128") == 0) sOpt->BlockSize64=0;
-                break;
 			case '?':
 				sOpt->Error = 1;
 				break;
@@ -157,7 +154,7 @@ void comline_fetch_options( struct Options * sOpt, int argc, char ** const argv 
 		// Read key and text (commandline mode)
 		else
 		{
-			if ( ((strlen(Opt_Key) != 32) && (strlen(Opt_Key) != 20)) || (strlen(Opt_Text) != 16) )
+			if ( ((strlen(Opt_Key) != 32)) || ((strlen(Opt_Text) != 16) && (strlen(Opt_Text) != 32)) )
 			{																																	//if wrong length...
 				sOpt->Error=1;																										//set error
 			}
@@ -175,7 +172,16 @@ void comline_fetch_options( struct Options * sOpt, int argc, char ** const argv 
 					sOpt->KeySize80=0;
 					sscanf( Opt_Key+16, "%016"SCNx64"", &sOpt->KeyLow );
 				}
+				if( strlen(Opt_Text) == 16)
+				{
 				sscanf( Opt_Text, "%016"SCNx64"", &sOpt->Text );
+				}
+				else
+				{
+                    sscanf( Opt_Text, "%016"SCNx64"", &sOpt->TextHigh );
+                    sscanf( Opt_Text+16, "%016"SCNx64"", &sOpt->Text );
+                    sOpt->BlockSize64=0;
+				}
 			}
 		}
 		// Handle Rounds Parameter
