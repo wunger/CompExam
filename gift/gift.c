@@ -459,7 +459,7 @@ uint64_t* encrypt128( uint64_t inHigh, uint64_t inLow, uint64_t *subkey, uint16_
         uint16_t temp;
         
         //printf("Round %u round key %016"PRIx64" %016"PRIx64 "\n\n", RoundNr, subkey[2*(RoundNr-1)+1], subkey[2*(RoundNr-1)]);
-        if (Roundwise) v_roundstart128(RoundNr,subkey[2*(RoundNr-1)+1],subkey[2*(RoundNr-1)+1]);
+        if (Roundwise) v_roundstart128(RoundNr,subkey[2*(RoundNr-1)+1],subkey[2*(RoundNr-1)]);
         
         textLow = inLow ^ subkey[2*(RoundNr-1)];
         textHigh = inHigh ^ subkey[2*(RoundNr-1)+1];

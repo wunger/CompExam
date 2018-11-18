@@ -191,8 +191,8 @@ void comline_fetch_options( struct Options * sOpt, int argc, char ** const argv 
 			else sOpt->Error=1;
 		}
 		else if (sOpt->BlockSize64)
-            sOpt->Rounds = 28;
-            else sOpt->Rounds = 40;
+            sOpt->Rounds = 29;
+            else sOpt->Rounds = 41;
             
             //...else use standard
 
