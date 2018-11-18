@@ -1,20 +1,131 @@
-William Unger
-GIFT code
-Comprehensive exam
-
-to compile call make and it will produce a gift exectable assuming you 
-have gcc installed
-
-to encrypt data run ./gift -e -f -k <KeyFile> -t <Plaintext>
-
-
-Ex.
-./gift -e -f -k key128.txt -t plain.txt
-
-Output:
+---------------------------------------
+GIFT Commandline Tool v1.0
+William Unger, williamunger@u.boisestate.edu
+Comprehensive Exam
+Computing Artiface
+---------------------------------------
+Edited From
 ---------------------------------------
 PRESENT Commandline Tool v2.1
 Thomas Siebert, thomas.siebert@rub.de
+---------------------------------------
+
+I. INTRODUCTION
+-----------------
+With this tool, you are able to encrypt and decrypt single blocks with
+the GIFT-Cipher.
+
+
+
+II. SYNTAX
+-----------------
+PRESENT -d|e [-f] [-r rounds] [-v level] -k key -t text
+
+Choose -d to decrypt, or -e to encrypt one block
+
+-f (optional): File input, see below
+-r rounds (optional): Change number of rounds (up to 47, standard is 29 for GIFT-64 and 41 for GIFT-128)
+Note: the -r argument is how many round keys are needed GIFT-64 has 28 full rounds but 29 round keys the last addRoundKey is considered a partial round.
+Note2: The round key displayed in the verbose mode in GIFt is the block
+size vale that get XORd with the register in which only a little more
+than half of the bits are random in the displayed subkey.
+
+-v level (optional): Specify verbose level:
+   0 for result-output only
+   1 for output of mode, input, result (standard)
+   2 for roundwise output
+
+-k key: Key in hexadecimal (length: *EXACTLY* 32 chars(128bit))
+-t text: Text in hexadecimal (length: *EXACTLY* 16 chars 64-bit blocks OR 32 chars for 128-bit blocks)
+If -f is set, key and text represent files containing the values,
+otherwise they must be passed directly via commandline.
+
+Returned Errorlevel: 0 if successful, 1 if non-successful
+
+
+
+III. FILES
+-----------------
+(a) Code
+gift.c - main code
+boxes.inc - S-Box/P-Box definitions
+comline.inc - command line interpreter
+verbose.inc - verbose output
+Makefile - for easy complation and cleaning.
+
+
+(b) Integrity Test
+key128.txt - test key file (128bit)
+plain.txt - test plaintext file (64bit)
+plain128.txt - test plaintext file (128bit)
+cipher.txt - test ciphertext file (64bit)
+cipher128.txt - test ciphertext file (128bit)
+--Plaintext and keys for usage within the scripts below.
+
+
+
+
+
+
+IV. COMPILING
+-----------------
+This code uses 64-bit-variables. The implementation of these variables is done
+by the file "inttypes.h" introduced in the ANSI-C99-specification. This e.g. works
+for gcc when adding the "--std=c99" option.
+You MAY find inttypes.h for non-C99-compliant compilers in the internet and you
+COULD be able to compile it with this file, but there is no guarantee.
+
+WTU- I ran it without the --std=c99 option but if issues occur add the
+option to the Makefile
+
+Assuming you have gcc installed call:
+
+make
+
+this will compile the gift.c code and the other .inc files into an
+executable file
+
+
+V. LIMITATIONS
+-----------------
+-Maximum for Rounds is 47.
+    This is due to in the implementation I used a look up table for the
+    round constants it can be edited later to allow any number of rounds
+-When using the -f parameter to read plain/ciphertext and key from files, this program
+ uses the fscanf-function. There may be limits due to the compilers implementation of this
+ function, e.g. it could be required to have a new line at the end of the value. Also, the
+ behaviour when encountering non-hexadecimal letters is basically undefined.
+
+
+
+VI. HISTORY
+-----------------
+1.0:	Implementation of GIFT by William Unger for BSU PhD Comprehensive Exam
+
+
+VII. Included Tests
+-----------------
+I ran the code with many plaintext/ciphertexts cominations with various keys
+The tests that I included are the txt files
+./gift -e -f -k key128.txt -t plain.txt -v0
+Should output: a78fe4ee2b2e37bd
+Which is what also is stored in cipher.txt
+
+Similaraly
+
+./gift -d -f -k key128.txt -t cipher.txt -v0
+Should output: badc0ffeebadf00d
+Which is also stored in plain.txt
+
+
+-v1(default verbosity) will output:
+
+[wunger@localhost gift]$ ./gift -e -f -k key128.txt -t plain.txt 
+---------------------------------------
+PRESENT Commandline Tool v2.1
+Thomas Siebert, thomas.siebert@rub.de
+Edited to GIFT Commandline Tool v1.0
+William Unger, williamunger@u.boisesate.edu
 ---------------------------------------
 
 Starting values
@@ -22,35 +133,240 @@ Plaintext: badc0ffeebadf00d
 Given Key (128bit): 1234567887654321 abab1234dfec2f3c
 
 Starting encryption...
-Resulting Cipher: b302e568f32b027a 
+Resulting Cipher: a78fe4ee2b2e37bd
 
+and:
 
-To change verbosity add -v2 to the call of gift
-
-Example
-
-./gift -e -f -k key128.txt -t plain.txt -v2
-
-
-It will add all intermeditary states
-
-Decryption works the same as encryptin except -d is used and the text file is ciphertext not plaintext
-
-Example
-
-./gift -d -f -k key128.txt -t cipher.txt
-
-Output:
-
+[wunger@localhost gift]$ ./gift -d -f -k key128.txt -t cipher.txt
 ---------------------------------------
 PRESENT Commandline Tool v2.1
 Thomas Siebert, thomas.siebert@rub.de
+Edited to GIFT Commandline Tool v1.0
+William Unger, williamunger@u.boisesate.edu
 ---------------------------------------
 
 Starting values
-Ciphertext: b302e568f32b027a 
+Ciphertext: a78fe4ee2b2e37bd 
 Given Key (128bit): 1234567887654321 abab1234dfec2f3c
 
 Starting decryption...
+Resulting Plaintext: badc0ffeebadf00d
+
+In the same cases shown in v0
+
+-v2 will result in the round by round encryption/decryption
+
+an example round as is follows:
+
+--------------------------------------
+Round 28
+Subkey: 813110220301819a
+
+Text after...
+...Key-Xor: b302e568f32b027a 
+.....S-Box: 7c148f32ec47149b 
+.....P-Box: 34adc6dc1a153f06 
+--------------------------------------
+
+NOTE: In decrypton to save space the decryption is fully done for the
+last (partal) round but the answer is after the XOR of the add round
+key function as shown below:
+
+Round 28
+Subkey: a0212032203121aa
+
+Text after...
+...Key-Xor: d16c49f455959946 
+.....P-Box: a258c5505dd55c1f 
+.....S-Box: 18ce3ccdc99cc305 
+--------------------------------------
+Round 29
+Subkey: a212333322313308
+
+Text after...
+...Key-Xor: badc0ffeebadf00d 
+.....P-Box: 86b9bbecedf6de81 
+.....S-Box: e4a7aaf3f9549fe0 
+************************************
+End of verbose output
+************************************
 Resulting Plaintext: badc0ffeebadf00d 
-[wunger@localhost gift]$ 
+
+
+Using 128-bit block works the same way and the sze is the block is
+auto-deteced in either the file or the argument passed in via 
+command line
+
+An example of 128-bit encryption as is flollows:
+
+[wunger@localhost gift]$ ./gift -e -f -k key128.txt -t plain128.txt 
+---------------------------------------
+PRESENT Commandline Tool v2.1
+Thomas Siebert, thomas.siebert@rub.de
+Edited to GIFT Commandline Tool v1.0
+William Unger, williamunger@u.boisesate.edu
+---------------------------------------
+
+Starting values
+Plaintext: 1122334455667788 badc0ffeebadf00d 
+Given Key (128bit): 1234567887654321 abab1234dfec2f3c
+
+Starting encryption...
+Resulting Cipher: c595d42c46ce5c7a 89fefc15757477bd 
+
+And decryption:
+
+[wunger@localhost gift]$ ./gift -d -f -k key128.txt -t cipher128.txt
+---------------------------------------
+PRESENT Commandline Tool v2.1
+Thomas Siebert, thomas.siebert@rub.de
+Edited to GIFT Commandline Tool v1.0
+William Unger, williamunger@u.boisesate.edu
+---------------------------------------
+
+Starting values
+CipherText: c595d42c46ce5c7a 89fefc15757477bd 
+Given Key (128bit): 1234567887654321 abab1234dfec2f3c
+
+Starting decryption...
+Resulting Plaintext: 1122334455667788 badc0ffeebadf00d 
+
+Instead of passing in files one can use hex is a command line argument
+as shown below:
+
+[wunger@localhost gift]$ ./gift -e -k 1234567887654321abab1234dfec2f3c -t badc0ffeebadf00d
+---------------------------------------
+PRESENT Commandline Tool v2.1
+Thomas Siebert, thomas.siebert@rub.de
+Edited to GIFT Commandline Tool v1.0
+William Unger, williamunger@u.boisesate.edu
+---------------------------------------
+
+Starting values
+Plaintext: badc0ffeebadf00d 
+Given Key (128bit): 1234567887654321 abab1234dfec2f3c
+
+Starting encryption...
+Resulting Cipher: a78fe4ee2b2e37bd 
+
+
+Also to change the number of rounds use the optional -r option 
+as shown below:
+
+[wunger@localhost gift]$ ./gift -e -f -k key128.txt -t plain.txt -r 4 -v2
+---------------------------------------
+PRESENT Commandline Tool v2.1
+Thomas Siebert, thomas.siebert@rub.de
+Edited to GIFT Commandline Tool v1.0
+William Unger, williamunger@u.boisesate.edu
+---------------------------------------
+
+Starting values
+Plaintext: badc0ffeebadf00d 
+Given Key (128bit): 1234567887654321 abab1234dfec2f3c
+
+Starting encryption...
+************************************
+Verbose output of GIFT-encryption
+************************************
+
+Given Plaintext: badc0ffeebadf00d 
+
+--------------------------------------
+Round 1
+Subkey: a212333322313308
+
+Text after...
+...Key-Xor: 18ce3ccdc99cc305 
+.....S-Box: a258c5505dd55c1f 
+.....P-Box: d16c49f455959946 
+--------------------------------------
+Round 2
+Subkey: a0212032203121aa
+
+Text after...
+...Key-Xor: 714d69c675a4b8ec 
+.....S-Box: 9a603d539fb67285 
+.....P-Box: 93d3e1be6db03254 
+--------------------------------------
+Round 3
+Subkey: a100023302300a8b
+
+Text after...
+...Key-Xor: 32d3e38d6f8038df 
+.....S-Box: c40c8c203e21c20e 
+.....P-Box: ad48648e22008d42 
+--------------------------------------
+Final Round
+
+Subkey: 8103013001339a88
+Text: 2c4b65be233317ca 
+
+************************************
+End of verbose output
+************************************
+Resulting Cipher: 2c4b65be233317ca 
+
+
+The same is true for decryption:
+
+[wunger@localhost gift]$ ./gift -d -k 1234567887654321abab1234dfec2f3c -t 2c4b65be233317ca -r 4 -v2
+---------------------------------------
+PRESENT Commandline Tool v2.1
+Thomas Siebert, thomas.siebert@rub.de
+Edited to GIFT Commandline Tool v1.0
+William Unger, williamunger@u.boisesate.edu
+---------------------------------------
+
+Starting values
+Ciphertext: 2c4b65be233317ca 
+Given Key (128bit): 1234567887654321 abab1234dfec2f3c
+
+Starting decryption...
+************************************
+Verbose output of GIFT-decryption
+************************************
+
+Given Ciphertext: 2c4b65be233317ca 
+--------------------------------------
+Round 1
+Subkey: 8103013001339a88
+
+Text after...
+...Key-Xor: ad48648e22008d42 
+.....P-Box: c40c8c203e21c20e 
+.....S-Box: 32d3e38d6f8038df 
+--------------------------------------
+Round 2
+Subkey: a100023302300a8b
+
+Text after...
+...Key-Xor: 93d3e1be6db03254 
+.....P-Box: 9a603d539fb67285 
+.....S-Box: 714d69c675a4b8ec 
+--------------------------------------
+Round 3
+Subkey: a0212032203121aa
+
+Text after...
+...Key-Xor: d16c49f455959946 
+.....P-Box: a258c5505dd55c1f 
+.....S-Box: 18ce3ccdc99cc305 
+--------------------------------------
+Round 4
+Subkey: a212333322313308
+
+Text after...
+...Key-Xor: badc0ffeebadf00d 
+.....P-Box: 86b9bbecedf6de81 
+.....S-Box: e4a7aaf3f9549fe0 
+************************************
+End of verbose output
+************************************
+Resulting Plaintext: badc0ffeebadf00d 
+
+
+
+
+
+

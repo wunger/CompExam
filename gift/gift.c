@@ -1,8 +1,11 @@
 /*
  * Implementation of PRESENT in C
  * v2.1, 10/13/2008
+ * Edited to GIFT
  *
  * Thomas Siebert, thomas.siebert@rub.de
+ * 
+ * William Unger, williamunger@u.boisestate.edu
  *
  *
  * Your Compiler currently should support
@@ -77,6 +80,8 @@ int main( int argc, char ** const argv )
 		printf( "---------------------------------------\n" );
 		printf( "PRESENT Commandline Tool v2.1\n" );
 		printf( "Thomas Siebert, thomas.siebert@rub.de\n" );
+        printf( "Edited to GIFT Commandline Tool v1.0\n" );
+        printf( "William Unger, williamunger@u.boisesate.edu\n" );
 		printf( "---------------------------------------\n\n" );
 	}
 
@@ -139,7 +144,7 @@ int main( int argc, char ** const argv )
         
             subkey =  key_schedule128( Opt.KeyHigh, Opt.KeyLow, Opt.Rounds, (Opt.Verbose>1) );
             
-            printf("128-bit option reached\n");
+            //printf("128-bit option reached\n");
             
             if ( Opt.Mode == Encrypt_Mode )
             {
@@ -217,7 +222,7 @@ uint64_t* key_schedule( uint64_t key_high, uint64_t key_low, uint16_t Rounds, _B
 
    if(subkey != NULL)
    {
-		if(Output) v_key_start();
+		//if(Output) v_key_start();
 
    	if (KeySize80)
 		{
@@ -226,7 +231,7 @@ uint64_t* key_schedule( uint64_t key_high, uint64_t key_low, uint16_t Rounds, _B
 		}
 		else //128 Bit
 		{
-			if(Output) v_k128_init(key_high, key_low);
+			//if(Output) v_k128_init(key_high, key_low);
             
             uint16_t keyState[8];
             
@@ -284,7 +289,7 @@ uint64_t* key_schedule( uint64_t key_high, uint64_t key_low, uint16_t Rounds, _B
 				}
 
 		}
-	if(Output) v_final();
+// 	//if(Output) v_final();
 	}
    else
    {

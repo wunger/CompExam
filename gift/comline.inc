@@ -133,14 +133,14 @@ void comline_fetch_options( struct Options * sOpt, int argc, char ** const argv 
 					if ((ftell(TextFile))>=32)
 					{
                         fseek(TextFile,0,SEEK_SET);
-                        printf("reading in 128-bits\n");
+                        //printf("reading in 128-bits\n");
 						if ( fscanf( TextFile, "%016"SCNx64"", &sOpt->TextHigh )==0 ) sOpt->Error=1;
 						if ( fscanf( TextFile, "%016"SCNx64"", &sOpt->Text )==0 ) sOpt->Error=1;
 						sOpt->BlockSize64=0;
 					}
 					else 
                         { 
-                        printf("reading in 64-bits\n");
+                        //printf("reading in 64-bits\n");
                         fseek(TextFile,0,SEEK_SET);
                         if ( fscanf( TextFile, "%016"SCNx64"", &sOpt->Text )  ==EOF ) sOpt->Error=1;
                         sOpt->BlockSize64=1;
@@ -191,7 +191,7 @@ void comline_fetch_options( struct Options * sOpt, int argc, char ** const argv 
 			{
 				uint32_t Rounds;
 				sscanf(Opt_Rounds, "%5"SCNu32"", &Rounds);											//get round no.
-				if ( ( Rounds > 65534 ) || Rounds==0 ) sOpt->Error=1;						//check 0<Rounds<65535
+				if ( ( Rounds > 47 ) || Rounds==0 ) sOpt->Error=1;						//check 0<Rounds<48
 				else sOpt->Rounds = Rounds;																			//override roundno.
 			}
 			else sOpt->Error=1;
