@@ -36,7 +36,7 @@ main(int argc, char** const argv)
 {
     // Initialize variables
     uint64_t       result;
-    uint64_t*      result128;
+    uint64_t*      result128 = NULL;
     struct Options Opt;
 
     // Get Commandline Options
@@ -53,7 +53,7 @@ main(int argc, char** const argv)
     }
 
     if (!Opt.Error) {
-        uint64_t* subkey;
+        uint64_t* subkey = NULL;
         if (Opt.BlockSize64) {
 
             if (Opt.Mode == Encrypt_Mode) {

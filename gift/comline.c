@@ -28,7 +28,6 @@ comline_fetch_options(struct Options* sOpt, int argc, char** const argv)
     _Bool Opt_Decrypt = 0, Opt_Encrypt = 0, Opt_File = 0, Opt_Verbose = 0;
     char *Opt_Text = NULL, *Opt_Key = NULL, *Opt_Rounds = NULL;
     FILE *KeyFile = NULL, *TextFile = NULL;
-    int   keyres;
 
     sOpt->Error       = 0;
     sOpt->Verbose     = 1;
@@ -122,7 +121,7 @@ comline_fetch_options(struct Options* sOpt, int argc, char** const argv)
                     fseek(KeyFile, 0, SEEK_SET);
                     if (fscanf(KeyFile, "%016" SCNx64 "", &sOpt->KeyHigh) == 0)
                         sOpt->Error = 1;
-                    if (fscanf(KeyFile, "%04" SCNx16 "", &sOpt->KeyLow) == 0)
+                    if (fscanf(KeyFile, "%04" SCNx16 "", (uint16_t*)&sOpt->KeyLow) == 0)
                         sOpt->Error = 1;
                     sOpt->KeySize80 = 1;
                 } else {
@@ -170,7 +169,7 @@ comline_fetch_options(struct Options* sOpt, int argc, char** const argv)
                 sscanf(Opt_Key, "%016" SCNx64 "", &sOpt->KeyHigh); // get values
                 if (strlen(Opt_Key) == 20) { // set key + size
                     sOpt->KeySize80 = 1;
-                    sscanf(Opt_Key + 16, "%016" SCNx16 "", &sOpt->KeyLow);
+                    sscanf(Opt_Key + 16, "%016" SCNx16 "", (uint16_t*)&sOpt->KeyLow);
 
                 } else {
                     sOpt->KeySize80 = 0;
