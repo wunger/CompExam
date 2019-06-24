@@ -1,5 +1,5 @@
 # Makefile for the GIFT cryptosystem
-# Made into something reasonable by
+# Made more modular by
 # 	Riley Myers
 # 	wmyers@nmt.edu/william.myers@inl.gov
 
@@ -11,19 +11,26 @@ CFLAGS		:= -Wall -Wpedantic -std=c99
 AVR-FLAGS 	:= -mmcu=atxmega128d3
 ARM-FLAGS 	:=
 
+
+.PHONY: all intel arm avr clean 
+
 all: intel
 
-%.o: %.c
+bin/%.o: %.c
+	@mkdir -p bin
 	$(CC) $(CFLAGS) $^ -c -o $@
 
-intel: gift.o verbose.o comline.o crypto.o
-	clang -Wall -Wpedantic -std=c99 $^ -o gift
+intel: bin/gift.o bin/verbose.o bin/comline.o bin/crypto.o
+	$(CC) $(CFLAGS) $^ -o bin/gift
 
-arm: gift.c
-	$(ARM-CC) $(CFLAGS) $< -o $@
+##### Don't run these yet, they aren't finished #####
+arm: bin/gift.o bin/verbose.o bin/comline.o bin/crypto.o
+	$(ARM-CC) $(CFLAGS) $^ -o bin/gift-$@
 
-avr: gift.c
-	$(AVR-CC) $(CFLAGS) $< -o $@
+avr: bin/gift.o bin/verbose.o bin/comline.o bin/crypto.o
+	$(AVR-CC) $(CFLAGS) $^ -o bin/gift-$@
+#####################################################
+
 
 clean:
-	rm gift *.o
+	rm -f bin/*
