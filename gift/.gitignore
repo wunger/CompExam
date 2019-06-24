@@ -1,7 +1,3 @@
-
-# Created by https://www.gitignore.io/api/C,vim
-# Edit at https://www.gitignore.io/?templates=C,vim
-
 ### C ###
 # Prerequisites
 *.d
@@ -75,4 +71,5 @@ tags
 # Persistent undo
 [._]*.un~
 
-# End of https://www.gitignore.io/api/C,vim
+# Project specific ignores:
+bin/*
