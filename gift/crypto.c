@@ -1,5 +1,11 @@
 /**
- * TODO
+ * Implementation of GIFT in C, cryptographic core functions
+ *
+ * Thomas Siebert, thomas.siebert@rub.de
+ * William Unger, williamunger@u.boisestate.edu
+ *
+ * Modified and modularized by Riley Myers (william.myers@inl.gov)
+ *
  */
 
 #include "crypto.h"

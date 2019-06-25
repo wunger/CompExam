@@ -1,5 +1,7 @@
 /**
- * Bit-manipulation macros
+ * Bit-manipulation macros for an implementation of GIFT/PRESENT in C
+ *
+ * Modularized by Riley Myers (william.myers@inl.gov)
  */
 
 #pragma once

@@ -4,6 +4,8 @@
  * v2.1, 10/13/2008
  *
  * Thomas Siebert, thomas.siebert@rub.de
+ *
+ * Modularized by Riley Myers (william.myers@inl.gov)
  */
 
 #pragma once

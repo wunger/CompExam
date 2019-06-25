@@ -7,6 +7,8 @@
  *
  * William Unger, williamunger@u.boisestate.edu
  *
+ * Modified and modularized by Riley Myers (william.myers@inl.gov)
+ *
  *
  * Your Compiler currently should support
  * the ANSI-C99-standard.
@@ -23,7 +25,6 @@
 #include <stdio.h> //Standard C headers...
 #include <stdlib.h>
 
-//#include "boxes.h"                  //S-Boxes and P-Boxes
 #include "comline.h" // Command Line
 #include "crypto.h"  // Crypto functions
 #include "verbose.h" // For verbose output

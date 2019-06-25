@@ -199,7 +199,7 @@ comline_fetch_options(struct Options* sOpt, int argc, char** const argv)
                 sOpt->Error = 1;
             }
 
-            // or use the standard parameters
+        // or use the standard parameters
         } else if (sOpt->BlockSize64) {
             sOpt->Rounds = 29;
         } else {
