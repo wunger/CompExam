@@ -386,7 +386,7 @@ decrypt(uint64_t in, uint64_t* subkey, uint16_t Rounds, _Bool Roundwise)
         //----------------------------------
         // Xor with roundkey
         //----------------------------------
-        text = in ^ subkey[Rounds - RoundNr];
+        text = base3Add(in, base3Invert(subkey[Rounds - RoundNr]));
 
         if (Roundwise)
             v_after_xor(text);
@@ -394,10 +394,10 @@ decrypt(uint64_t in, uint64_t* subkey, uint16_t Rounds, _Bool Roundwise)
         //----------------------------------
         // P-Box
         //----------------------------------
-        for (PBit = 0, out = 0; PBit < 64; PBit++) {
+        for (PBit = 0, out = 0; PBit < 32; PBit++) {
             // next(rotate by one bit) and put new value to lowest bit (pbox)
-            out = rotate1l_64(out);
-            out |= ((text >> (63 - PboxInv[PBit])) & 1);
+            out = rotate2l_64(out);
+            out |= ((text >> ((31 - ((PboxInv[PBit]))) * 2) ) & 0x3);
         }
 
         if (Roundwise)
