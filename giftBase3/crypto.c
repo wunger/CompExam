@@ -531,4 +531,20 @@ base3Add(uint64_t in, uint64_t subkey)
     return retVal;
 }
 
+uint64_t
+base3Invert(uint64_t in)
+{
+    uint64_t retVal = 0;
+    int64_t temp;
+    int i;
+    for(i = 0; i < 32; i++)
+    {
+        temp = (((((in >> (i * 2)) & 0x3) * (-1)) + 3) % 3); //gets value, masks and inverts the base 3 number
+        retVal = retVal | (temp << (i*2)); //put base 3 number into the return value
+    }
+    
+    return retVal;
+}
+
+
 

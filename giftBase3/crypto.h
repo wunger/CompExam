@@ -50,3 +50,6 @@ key_schedule128(uint64_t key_high,
 uint64_t
 base3Add(uint64_t in, 
          uint64_t subkey);
+
+uint64_t
+base3Invert(uint64_t in);
