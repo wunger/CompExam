@@ -59,13 +59,19 @@ key_schedule(uint64_t key_high,
                 // printf("V in round %i value: %i\n", i, V);
 
                 int j;
-                for (j = 0; j < 16; j++) {
+                for (j = 0; j < 8; j++) {
                     // Putting keystate into the subkey
-                    subkey[i] = setBit(subkey[i], getBit(U, j), (4 * j + 1));
-                    subkey[i] = setBit(subkey[i], getBit(V, j), (4 * j));
+                    subkey[i] = setBit(subkey[i], getBit(U, (2*j +1)), (4 * j + 1));
+                    subkey[i] = setBit(subkey[i], getBit(U, (2*j)), (4 * j));
+                }
+                for (j = 8; j < 16; j++) {
+                    // Putting keystate into the subkey
+                    subkey[i] = setBit(subkey[i], getBit(V, (2*(j-8) + 1)), (4 * j + 1));
+                    subkey[i] = setBit(subkey[i], getBit(V, (2*(j-8))), (4 * j));
                 }
                 // printf("Constant for round %i value :%i\n",i,Constants[i]);
 
+                /*
                 for (j = 0; j < 6; j++) {
                     subkey[i] = setBit(
                       subkey[i], getBit(Constants[i], j), ConstantsLocation[j]);
@@ -74,6 +80,7 @@ key_schedule(uint64_t key_high,
 
                 // always having 1 on the blockSize-1 round key
                 subkey[i] = setBit(subkey[i], 0x01, 63);
+                */
 
                 // below is the update of the key state.
                 uint16_t keyStateUpdated[8];
