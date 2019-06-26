@@ -510,3 +510,25 @@ decrypt128(uint64_t  inHigh,
     return retVal;
 }
 // End decryption
+
+uint64_t
+base3Add(uint64_t in, uint64_t subkey)
+{
+    uint64_t retVal = 0;
+    uint64_t temp1;
+    uint64_t temp2;
+    int i;
+    for(i = 0; i < 32; i++)
+    {
+        temp1 = ((in >> (i * 2)) & 0x3); //Get two bit quantity and mask
+        temp2 = ((subkey >> (i * 2)) & 0x3); //Get two bit quantity and mask
+        
+        temp1 = (temp1+temp2) % 3; //Mod by three to get a base 3 number
+        
+        retVal = retVal | (temp1 << (i*2)); //put base 3 number into the return value
+    }
+    
+    return retVal;
+}
+
+

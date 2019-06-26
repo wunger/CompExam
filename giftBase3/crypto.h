@@ -46,3 +46,7 @@ key_schedule128(uint64_t key_high,
                 uint64_t key_low,
                 uint16_t Rounds,
                 _Bool    Output);
+
+uint64_t
+base3Add(uint64_t in, 
+         uint64_t subkey);
