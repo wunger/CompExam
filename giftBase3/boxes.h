@@ -6,11 +6,11 @@
  * Thomas Siebert, thomas.siebert@rub.de
  */
 
-const uint8_t Sbox[16] = // changed to use GIFT structure
-  { 1, 0xa, 4, 0xc, 6, 0xf, 3, 9, 2, 0xd, 0xb, 7, 5, 0, 8, 0xe };
+const uint8_t Sbox[16] = // changed to use GIFT structure base 3 oxf occurs in an error
+  { 6, 0xa, 4, 0xf, 1, 8, 2, 0xf, 0, 5, 9, 0xf, 0xf, 0xf, 0xf, 0xf };
 
-const uint8_t SboxInv[16] = // Changed to use GIFT structure
-  { 13, 0, 8, 6, 2, 12, 4, 11, 14, 7, 1, 10, 3, 9, 15, 5 };
+const uint8_t SboxInv[16] = // Changed to use GIFT structure base 3 oxf occurs in an error
+  { 8, 4, 6, 0xf, 2, 9, 0, 0xf, 5, 0xa, 1, 0xf, 0xf, 0xf, 0xf, 0xf };
 
 const uint8_t PboxInv[64] = { 0,  5,  10, 15, 16, 21, 26, 31, 32, 37, 42,
                               47, 48, 53, 58, 63, 12, 1,  6,  11, 28, 17,
