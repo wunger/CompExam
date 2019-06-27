@@ -455,8 +455,9 @@ decrypt128(uint64_t  inHigh,
                             subkey[(2 * Rounds) - (2 * (RoundNr))]);
         // printf("Decyrption key low:%i key high
         // %i\n",((2*Rounds)-(2*(RoundNr))),(2*Rounds)-(2*(RoundNr))+1);
-        textHigh = inHigh ^ subkey[(2 * Rounds) - (2 * (RoundNr)) + 1];
-        textLow  = inLow ^ subkey[(2 * Rounds) - (2 * (RoundNr))];
+            
+        textHigh = base3Add(inHigh, base3Invert(subkey[(2 * Rounds) - (2 * (RoundNr)) + 1]));
+        textLow  = base3Add(inLow, base3Invert(subkey[(2 * Rounds) - (2 * (RoundNr))]));
 
         if (Roundwise)
             v_after_xor128(textHigh, textLow);
@@ -466,24 +467,24 @@ decrypt128(uint64_t  inHigh,
         outHigh = 0;
         outLow  = 0;
 
-        for (PBit = 0; PBit < 128; PBit++) {
+        for (PBit = 0; PBit < 64; PBit++) {
             uint8_t bitNum = Pbox128Inv[PBit];
-            if (PBit < 64) {
+            if (PBit < 32) {
 
-                if (bitNum < 64) {
-                    outLow = setBit(outLow, getBit(textLow, PBit), bitNum);
+                if (bitNum < 32) {
+                    outLow = setDigitBase3(outLow, getBit(textLow, PBit), bitNum);
                 } else {
                     outHigh =
-                      setBit(outHigh, getBit(textLow, PBit), (bitNum - 64));
+                      setDigitBase3(outHigh, getBit(textLow, PBit), (bitNum - 32));
                 }
 
             } else {
-                if (bitNum < 64) {
+                if (bitNum < 32) {
                     outLow =
-                      setBit(outLow, getBit(textHigh, (PBit - 64)), bitNum);
+                      setDigitBase3(outLow, getBit(textHigh, (PBit - 32)), bitNum);
                 } else {
                     outHigh =
-                      setBit(outHigh, getBit(textHigh, (PBit - 64)), (bitNum - 64));
+                      setDigitBase3(outHigh, getBit(textHigh, (PBit - 32)), (bitNum - 32));
                 }
             }
         }
