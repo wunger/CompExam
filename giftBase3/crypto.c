@@ -284,8 +284,8 @@ encrypt128(uint64_t  inHigh,
                             subkey[2 * (RoundNr - 1) + 1],
                             subkey[2 * (RoundNr - 1)]);
 
-        textLow  = inLow ^ subkey[2 * (RoundNr - 1)];
-        textHigh = inHigh ^ subkey[2 * (RoundNr - 1) + 1];
+        textLow  = base3Add(inLow, subkey[2 * (RoundNr - 1)]);
+        textHigh = base3Add(inHigh, subkey[2 * (RoundNr - 1) + 1]);
 
         if (Roundwise)
             v_after_xor128(textHigh, textLow);
@@ -319,24 +319,24 @@ encrypt128(uint64_t  inHigh,
 
         // The four cases that they could permute differnetly form text to
         // output
-        for (PBit = 0; PBit < 128; PBit++) {
+        for (PBit = 0; PBit < 64; PBit++) {
             uint8_t bitNum = Pbox128[PBit];
-            if (PBit < 64) {
+            if (PBit < 32) {
 
-                if (bitNum < 64) {
-                    outLow = setBit(outLow, getBit(textLow, PBit), bitNum);
+                if (bitNum < 32) {
+                    outLow = setDigitBase3(outLow, getBit(textLow, PBit), bitNum);
                 } else {
                     outHigh =
-                      setBit(outHigh, getBit(textLow, PBit), (bitNum - 64));
+                      setDigitBase3(outHigh, getBit(textLow, PBit), (bitNum - 32));
                 }
 
             } else {
-                if (bitNum < 64) {
+                if (bitNum < 32) {
                     outLow =
-                      setBit(outLow, getBit(textHigh, (PBit - 64)), bitNum);
+                      setDigitBase3(outLow, getBit(textHigh, (PBit - 32)), bitNum);
                 } else {
                     outHigh =
-                      setBit(outHigh, getBit(textHigh, (PBit - 64)), (bitNum - 64));
+                      setDigitBase3(outHigh, getBit(textHigh, (PBit - 32)), (bitNum - 32));
                 }
             }
         }
@@ -345,8 +345,9 @@ encrypt128(uint64_t  inHigh,
     }
     // printf("Encryption final XOR round %i key low index:%i key high index
     // %i\n",RoundNr, (2*(RoundNr-1)),(2*(RoundNr-1)+1));
-    retVal[0] = inLow ^ subkey[2 * (RoundNr - 1)];
-    retVal[1] = inHigh ^ subkey[2 * (RoundNr - 1) + 1];
+        
+    retVal[0] = base3Add(inLow, subkey[2 * (RoundNr - 1)]);
+    retVal[1] = base3Add(inHigh, subkey[2 * (RoundNr - 1) + 1]);
 
     if (Roundwise)
         v_enc_final128(retVal[1],

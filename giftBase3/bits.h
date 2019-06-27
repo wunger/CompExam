@@ -38,5 +38,8 @@
 #define getBit(in, bitNum) (((uint64_t)in >> bitNum) & 0x01)
 #define setBit(src, in, bitNum) (((uint64_t)in << bitNum) | (uint64_t)src)
 
+#define getDigitBase3(in, digitNum) (((uint64_t)in >> (digitNum * 2)) & 0x03)
+#define setDigitBase3(src, in, digitNum) (((uint64_t)in << (digitNum * 2)) | (uint64_t)src)
+
 #define rotateRight16Bit(in, bitNum)                                           \
     (((in >> bitNum) | (in << (16 - bitNum))) & ((1 << 16) - 1))
