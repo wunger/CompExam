@@ -38,8 +38,9 @@
 #define getBit(in, bitNum) (((uint64_t)in >> bitNum) & 0x01)
 #define setBit(src, in, bitNum) (((uint64_t)in << bitNum) | (uint64_t)src)
 
+#define clearDigitBase3(in, digit) (((~((uint64_t) 0x03 << (uint64_t)(digit * 2)))) & (uint64_t) in) //Needed when dealing with base 3 in se command because there can be bit value of zero to represent a digit.
 #define getDigitBase3(in, digitNum) (((uint64_t)in >> (digitNum * 2)) & 0x03)
-#define setDigitBase3(src, in, digitNum) (((uint64_t)in << (digitNum * 2)) | (uint64_t)src)
+#define setDigitBase3(src, in, digitNum) (((uint64_t)in << (digitNum * 2)) | (uint64_t) clearDigitBase3(src,digitNum))
 
 #define rotateRight16Bit(in, bitNum)                                           \
     (((in >> bitNum) | (in << (16 - bitNum))) & ((1 << 16) - 1))

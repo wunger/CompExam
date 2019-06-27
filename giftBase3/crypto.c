@@ -135,16 +135,29 @@ key_schedule128(uint64_t key_high,
 
         int j;
 
-        for (j = 0; j < 16; j++) {
-            subkey[2 * i] = setBit(subkey[2 * i], getBit(U, j), (4 * j + 1));
-            subkey[2 * i] = setBit(subkey[2 * i], getBit(V, j), (4 * j));
+        for (j = 0; j < 8; j++) {
+            
+            subkey[2 * i] = setBit(subkey[2 * i], getBit(U, (2*j +1)), (4 * j + 1));
+            subkey[2 * i] = setBit(subkey[2 * i], getBit(U, (j*2)), (4 * j));
             // Putting keystate into the subkey
             subkey[2 * i + 1] =
-              setBit(subkey[2 * i + 1], getBit(U, (j + 16)), (4 * j + 1));
+              setBit(subkey[2 * i + 1], getBit(U, ((2*j) + 1 + 16)), (4 * j + 1));
             subkey[2 * i + 1] =
-              setBit(subkey[2 * i + 1], getBit(V, (j + 16)), (4 * j));
+              setBit(subkey[2 * i + 1], getBit(U, ((2*j) + 16)), (4 * j));
         }
-
+        for (j = 8; j < 16; j++)
+        {                    
+            subkey[2 * i] = setBit(subkey[2 * i], getBit(V, (2*(j-8) +1)), (4 * j + 1));
+            subkey[2 * i] = setBit(subkey[2 * i], getBit(V, (2*(j-8))), (4 * j));
+            
+            subkey[2 * i + 1] =
+              setBit(subkey[2 * i + 1], getBit(V, ((2*(j-8)) + 1 + 16)), (4 * j + 1));
+            subkey[2 * i + 1] =
+              setBit(subkey[2 * i + 1], getBit(V, ((2*(j-8)) + 16)), (4 * j));
+            
+        }
+        
+        /*
         for (j = 0; j < 6; j++) {
             subkey[2 * i] = setBit(
               subkey[2 * i], getBit(Constants[i], j), ConstantsLocation[j]);
@@ -153,6 +166,7 @@ key_schedule128(uint64_t key_high,
 
         // always having 1 on the blockSize-1 round key
         subkey[2 * i + 1] = setBit(subkey[2 * i + 1], 0x01, 63);
+        */
 
         uint16_t keyStateUpdated[8];
         keyStateUpdated[7] = rotateRight16Bit(keyState[1], 2);
@@ -324,19 +338,19 @@ encrypt128(uint64_t  inHigh,
             if (PBit < 32) {
 
                 if (bitNum < 32) {
-                    outLow = setDigitBase3(outLow, getBit(textLow, PBit), bitNum);
+                    outLow = setDigitBase3(outLow, getDigitBase3(textLow, PBit), bitNum);
                 } else {
                     outHigh =
-                      setDigitBase3(outHigh, getBit(textLow, PBit), (bitNum - 32));
+                      setDigitBase3(outHigh, getDigitBase3(textLow, PBit), (bitNum - 32));
                 }
 
             } else {
                 if (bitNum < 32) {
                     outLow =
-                      setDigitBase3(outLow, getBit(textHigh, (PBit - 32)), bitNum);
+                      setDigitBase3(outLow, getDigitBase3(textHigh, (PBit - 32)), bitNum);
                 } else {
                     outHigh =
-                      setDigitBase3(outHigh, getBit(textHigh, (PBit - 32)), (bitNum - 32));
+                      setDigitBase3(outHigh, getDigitBase3(textHigh, (PBit - 32)), (bitNum - 32));
                 }
             }
         }
@@ -455,6 +469,7 @@ decrypt128(uint64_t  inHigh,
                             subkey[(2 * Rounds) - (2 * (RoundNr))]);
         // printf("Decyrption key low:%i key high
         // %i\n",((2*Rounds)-(2*(RoundNr))),(2*Rounds)-(2*(RoundNr))+1);
+
             
         textHigh = base3Add(inHigh, base3Invert(subkey[(2 * Rounds) - (2 * (RoundNr)) + 1]));
         textLow  = base3Add(inLow, base3Invert(subkey[(2 * Rounds) - (2 * (RoundNr))]));
@@ -472,19 +487,19 @@ decrypt128(uint64_t  inHigh,
             if (PBit < 32) {
 
                 if (bitNum < 32) {
-                    outLow = setDigitBase3(outLow, getBit(textLow, PBit), bitNum);
+                    outLow = setDigitBase3(outLow, getDigitBase3(textLow, PBit), bitNum);
                 } else {
                     outHigh =
-                      setDigitBase3(outHigh, getBit(textLow, PBit), (bitNum - 32));
+                      setDigitBase3(outHigh, getDigitBase3(textLow, PBit), (bitNum - 32));
                 }
 
             } else {
                 if (bitNum < 32) {
                     outLow =
-                      setDigitBase3(outLow, getBit(textHigh, (PBit - 32)), bitNum);
+                      setDigitBase3(outLow, getDigitBase3(textHigh, (PBit - 32)), bitNum);
                 } else {
                     outHigh =
-                      setDigitBase3(outHigh, getBit(textHigh, (PBit - 32)), (bitNum - 32));
+                      setDigitBase3(outHigh, getDigitBase3(textHigh, (PBit - 32)), (bitNum - 32));
                 }
             }
         }
