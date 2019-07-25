@@ -99,7 +99,7 @@ main(int argc, char** const argv)
                       while (found == 0)
                       {
                           newCycle32 = encrypt32(newCycle32, subkey, Opt.Rounds, (Opt.Verbose > 1));
-                          printf("%08" PRIx32 "\n", newCycle32);
+                          //printf("%08" PRIx32 "\n", newCycle32);
                           if (newCycle32 == cycleComp32)
                           {
                               printf("Cycle length %ld\n", counter);
