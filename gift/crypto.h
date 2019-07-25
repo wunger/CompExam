@@ -17,6 +17,9 @@
 uint64_t
 encrypt(uint64_t in, uint64_t* subkey, uint16_t Rounds, _Bool Roundwise);
 
+uint32_t
+encrypt32(uint32_t in, uint64_t* subkey, uint16_t Rounds, _Bool Roundwise);
+
 uint64_t*
 encrypt128(uint64_t  inHigh,
            uint64_t  inLow,
