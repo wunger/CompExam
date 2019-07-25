@@ -54,3 +54,18 @@ const uint8_t Constants[48] = // Added to use GIFT structure
     0x1b, 0x36, 0x2d, 0x1a, 0x34, 0x29, 0x12, 0x24, 0x08, 0x11, 0x22, 0x04 };
 
 const uint8_t ConstantsLocation[6] = { 3, 7, 11, 15, 19, 23 };
+
+// Gift like look up tables
+const uint8_t Pbox32[32] = {0,9,18,27,24,1,10,19,
+                            16,25,2,11,8,17,26,3,
+                            4,13,22,31,28,5,14,23,
+                            20,29,6,15,12,21,30,7
+};
+
+const uint8_t Pbox32Inv[32] = {0,5,10,15,16,21,26,31,
+                            12,1,6,11,28,17,22,27,
+                            8,13,2,7,24,29,18,23,
+                            4,9,14,3,20,25,30,19
+    
+};
+

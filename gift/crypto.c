@@ -176,6 +176,46 @@ key_schedule128(uint64_t key_high,
 //----------------------------------
 // Start encryption
 
+uint32_t
+encrypt32(uint32_t in32, uint64_t* subkey, uint16_t Rounds, _Bool Roundwise)
+{
+    #define out32 in32
+    uint16_t RoundNr;
+    uint32_t text32;
+    
+        for (RoundNr = 1; RoundNr < Rounds; RoundNr++) 
+        { // Start "for"
+            uint16_t temp;
+            #define SboxNr32 temp
+            #define PBit32 temp
+        
+            text32 = (uint32_t) (in32 ^ subkey[RoundNr - 1]);
+        
+            for (SboxNr32 = 0; SboxNr32 < 8; SboxNr32++) 
+            {
+                uint16_t SboxVal;
+
+                SboxVal = text32 & 0x0F;      // get lowest nibble
+                text32 &= 0xFFFFFFF0; // kill lowest nibble
+                text32 |= Sbox[SboxVal];      // put new value to lowest nibble (sbox)
+                text32 = rotate4l_32(text32);   // next(rotate by one nibble)
+            }
+            
+            for (PBit32 = 0, out32 = 0; PBit32 < 64; PBit32++) {
+                // next(rotate by one bit) and put new value to lowest bit (pbox)
+                out32 = rotate1l_32(out32);
+                out32 |= ((text32 >> (31 - Pbox32[PBit32])) & 1);
+            }
+
+        
+        }
+        
+        text32 = (uint32_t) (in32 ^ subkey[RoundNr - 1]);
+        
+        return text32;
+    
+}
+
 uint64_t
 encrypt(uint64_t in, uint64_t* subkey, uint16_t Rounds, _Bool Roundwise)
 {
