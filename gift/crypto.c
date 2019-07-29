@@ -176,6 +176,47 @@ key_schedule128(uint64_t key_high,
 //----------------------------------
 // Start encryption
 
+uint16_t
+encrypt16(uint16_t in16, uint64_t* subkey, uint16_t Rounds, _Bool Roundwise)
+{
+    #define out16 in16
+    uint16_t RoundNr;
+    uint16_t text16;
+    
+        for (RoundNr = 1; RoundNr < Rounds; RoundNr++) 
+        { // Start "for"
+            uint16_t temp;
+            #define SboxNr16 temp
+            #define PBit16 temp
+        
+            text16 = (uint16_t) (in16 ^ subkey[RoundNr - 1]);
+        
+            for (SboxNr16 = 0; SboxNr16 < 4; SboxNr16++) 
+            {
+                uint16_t SboxVal;
+
+                SboxVal = text16 & 0x0F;      // get lowest nibble
+                text16 &= 0xFFF0; // kill lowest nibble
+                text16 |= Sbox[SboxVal];      // put new value to lowest nibble (sbox)
+                text16 = rotate4l_16(text16);   // next(rotate by one nibble)
+            }
+            
+            for (PBit16 = 0, out16 = 0; PBit16 < 16; PBit16++) {
+                // next(rotate by one bit) and put new value to lowest bit (pbox)
+                out16 = rotate1l_16(out16);
+                out16 |= ((text16 >> (15 - Pbox16[PBit16])) & 1);
+            }
+
+        
+        }
+        
+        text16 = (uint16_t) (in16 ^ subkey[RoundNr - 1]);
+        
+        return text16;
+    
+}
+
+
 uint32_t
 encrypt32(uint32_t in32, uint64_t* subkey, uint16_t Rounds, _Bool Roundwise)
 {
@@ -201,7 +242,7 @@ encrypt32(uint32_t in32, uint64_t* subkey, uint16_t Rounds, _Bool Roundwise)
                 text32 = rotate4l_32(text32);   // next(rotate by one nibble)
             }
             
-            for (PBit32 = 0, out32 = 0; PBit32 < 64; PBit32++) {
+            for (PBit32 = 0, out32 = 0; PBit32 < 32; PBit32++) {
                 // next(rotate by one bit) and put new value to lowest bit (pbox)
                 out32 = rotate1l_32(out32);
                 out32 |= ((text32 >> (31 - Pbox32[PBit32])) & 1);

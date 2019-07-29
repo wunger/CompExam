@@ -1,0 +1,23 @@
+---------------------------------------
+PRESENT Commandline Tool v2.1
+Thomas Siebert, thomas.siebert@rub.de
+Edited to GIFT Commandline Tool v1.0
+William Unger, williamunger@u.boisesate.edu
+---------------------------------------
+
+Starting values
+Plaintext: 0000000000000123 
+Given Key (128bit): 1234567887654321 abab1234dfec2f3c
+
+Starting encryption...
+Entered 16 bit cycle mode
+Index at: 5000
+Index at: 10000
+Index at: 15000
+Index at: 20000
+Index at: 25000
+Index at: 30000
+Index at: 35000
+Index at: 40000
+Index at: 45000
+Cycle length 48593

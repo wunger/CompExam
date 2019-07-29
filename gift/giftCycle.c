@@ -91,11 +91,44 @@ main(int argc, char** const argv)
                   uint64_t cycleComp = Opt.Text;
                   uint64_t newCycle = Opt.Text;
                   
+                  if (cycleComp == (cycleComp & (uint64_t) 0xffff))
+                  {
+                      printf("Entered 16 bit cycle mode\n");
+                      uint16_t cycleComp16 = (uint16_t) cycleComp;
+                      uint16_t newCycle16  = (uint16_t) newCycle;
+                      while(found == 0)
+                      {
+                          newCycle16 = encrypt16(newCycle16, subkey, Opt.Rounds, (Opt.Verbose > 1));
+                          
+                          //printf("%08" PRIx64 "\n", newCycle16);
+                          
+                          if (newCycle16 == cycleComp16)
+                          {
+                              printf("Cycle length %ld\n", counter);
+                              found = 1;
+                          }
+                          /*
+                          if (counter == 15)
+                          {
+                            return 0;
+                          }
+                          */
+                          if (counter % 5000 == 0)
+                          {
+                            printf("Index at: %ld\n", counter);
+                          }
+                          counter++;
+                      }
+                      return 0;
+                      
+                  }
+                  
+                  
                   if (cycleComp == (cycleComp & (uint64_t) 0xffffffff))
                   {
                       printf("Entered 32 bit cycle mode\n");
                       uint32_t cycleComp32 = (uint32_t) cycleComp;
-                      uint32_t newCycle32  = (uint32_t) newCycle32;
+                      uint32_t newCycle32  = (uint32_t) newCycle;
                       while (found == 0)
                       {
                           newCycle32 = encrypt32(newCycle32, subkey, Opt.Rounds, (Opt.Verbose > 1));
