@@ -6,12 +6,12 @@
 #SBATCH --ntasks=1   # number of processes (i.e. tasks)
 #SBATCH --nodes=1   # number of nodes
 #SBATCH --mem-per-cpu=1G   # memory per CPU core
-#SBATCH -J "GIFT-July-25-01"   # job name
+#SBATCH -J "GIFT-July-29-01"   # job name
 #SBATCH --mail-user=williamunger@u.boisestate.edu   # email address
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-type=FAIL
-#SBATCH --output=outJuly25-04.txt
+#SBATCH --output=outJuly29-01.txt
 
 
 ../../bin/giftCycle -e -f -k ../Input/key128July25-01.txt -t ../Input/plain32July25-01.txt
