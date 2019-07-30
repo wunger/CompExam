@@ -67,8 +67,8 @@ v_roundstart(uint16_t v_round, uint64_t v_key)
 void
 v_roundstart128(uint16_t v_round, uint64_t v_keyHigh, uint64_t v_keyLow)
 {
-    printf("--------------------------------------\n");
-    printf("Round %" PRIu16 "\n", v_round);
+    //printf("--------------------------------------\n");
+    //printf("Round %" PRIu16 "\n", v_round);
     printf("Subkey: %016" PRIx64 " %016" PRIx64 "\n\n", v_keyHigh, v_keyLow);
     printf("Text after...\n");
 }
