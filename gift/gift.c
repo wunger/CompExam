@@ -138,7 +138,7 @@ main(int argc, char** const argv)
             // printf("128-bit option reached\n");
 
             if (Opt.Mode == Encrypt_Mode) {
-                // printf("Encypt mode 128-bit block reached.\n");
+                 printf("Encypt mode 128-bit block reached.\n");
 
                 if (Opt.Verbose != 0) {
                     printf("Starting values\n");

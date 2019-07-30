@@ -32,7 +32,7 @@ v_enc_start128(uint64_t v_plainHigh, uint64_t v_plainLow)
     printf("************************************\n");
     printf("Verbose output of GIFT-encryption\n");
     printf("************************************\n\n");
-    printf("Given Ciphertext: %016" PRIx64 " %016" PRIx64 " \n",
+    printf("Given Plaintext: %016" PRIx64 " %016" PRIx64 " \n",
            v_plainHigh,
            v_plainLow);
 }

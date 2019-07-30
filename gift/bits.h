@@ -48,7 +48,7 @@
     (high4_64(r4rin) | (r4rin >> 4)) // input rotated right (4x)
     
 #define getBit(in, bitNum) (((uint64_t)in >> bitNum) & 0x01)
-#define setBit(src, in, bitNum) (((uint64_t)in << bitNum) | (uint64_t)src)
+#define setBit(src, in, bitNum) (((uint64_t) (in & 0x01) << bitNum) | (uint64_t)src)
 
 #define rotateRight16Bit(in, bitNum)                                           \
     (((in >> bitNum) | (in << (16 - bitNum))) & ((1 << 16) - 1))
