@@ -15,6 +15,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <inttypes.h>
 
 //----------------------------------
 // Key Scheduling
@@ -123,8 +124,8 @@ key_schedule128(uint64_t key_high,
         uint32_t V             = 0;
         //uint8_t  roundConstant = Constants[i];
 
-        U = ((uint32_t)keyState[5] << 16) | (uint32_t)(keyState[4]);
-        V = ((uint32_t)keyState[1] << 16) | (uint32_t)(keyState[0]);
+        U = (uint32_t)((uint16_t)keyState[5] << 16) | (uint32_t)((uint16_t)(keyState[4]));
+        V = (uint32_t)((uint16_t)keyState[1] << 16) | (uint32_t)((uint16_t)(keyState[0]));
 
         int j;
 
@@ -181,15 +182,14 @@ encrypt16(uint16_t in16, uint64_t* subkey, uint16_t Rounds, _Bool Roundwise)
 {
     #define out16 in16
     uint16_t RoundNr;
-    uint16_t text16;
+    uint16_t text16 = in16;
     
-        for (RoundNr = 1; RoundNr < Rounds; RoundNr++) 
+        for (RoundNr = 0; RoundNr < (Rounds -1); RoundNr++) 
         { // Start "for"
             uint16_t temp;
             #define SboxNr16 temp
             #define PBit16 temp
         
-            text16 = (uint16_t) (in16 ^ subkey[RoundNr - 1]);
         
             for (SboxNr16 = 0; SboxNr16 < 4; SboxNr16++) 
             {
@@ -206,11 +206,11 @@ encrypt16(uint16_t in16, uint64_t* subkey, uint16_t Rounds, _Bool Roundwise)
                 out16 = rotate1l_16(out16);
                 out16 |= ((text16 >> (15 - Pbox16[PBit16])) & 1);
             }
-
+            text16 = (uint16_t) (out16 ^ subkey[RoundNr]);
         
         }
         
-        text16 = (uint16_t) (in16 ^ subkey[RoundNr - 1]);
+        //text16 = (uint16_t) (in16 ^ subkey[RoundNr - 1]);
         
         return text16;
     
@@ -222,15 +222,15 @@ encrypt32(uint32_t in32, uint64_t* subkey, uint16_t Rounds, _Bool Roundwise)
 {
     #define out32 in32
     uint16_t RoundNr;
-    uint32_t text32;
+    uint32_t text32 = in32;
     
-        for (RoundNr = 1; RoundNr < Rounds; RoundNr++) 
+        for (RoundNr = 0; RoundNr < (Rounds - 1); RoundNr++) 
         { // Start "for"
             uint16_t temp;
             #define SboxNr32 temp
             #define PBit32 temp
         
-            text32 = (uint32_t) (in32 ^ subkey[RoundNr - 1]);
+            
         
             for (SboxNr32 = 0; SboxNr32 < 8; SboxNr32++) 
             {
@@ -247,11 +247,15 @@ encrypt32(uint32_t in32, uint64_t* subkey, uint16_t Rounds, _Bool Roundwise)
                 out32 = rotate1l_32(out32);
                 out32 |= ((text32 >> (31 - Pbox32[PBit32])) & 1);
             }
+            
+            text32 = (uint32_t) (out32 ^ subkey[RoundNr]);
 
         
         }
         
-        text32 = (uint32_t) (in32 ^ subkey[RoundNr - 1]);
+        //text32 = (uint32_t) (in32 ^ subkey[RoundNr - 1]);
+        
+        //printf("OUT: %08" PRIx64 "\n", text32);
         
         return text32;
     
