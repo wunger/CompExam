@@ -1,0 +1,17 @@
+#!/bin/bash
+
+#Submit this script with: sbatch thefilename
+
+#SBATCH --time=23:00:00   # walltime
+#SBATCH --ntasks=1   # number of processes (i.e. tasks)
+#SBATCH --nodes=1   # number of nodes
+#SBATCH --mem-per-cpu=1G   # memory per CPU core
+#SBATCH -J "GIFT-Aug-15-05"   # job name
+#SBATCH --mail-user=williamunger@u.boisestate.edu   # email address
+#SBATCH --mail-type=BEGIN
+#SBATCH --mail-type=END
+#SBATCH --mail-type=FAIL
+#SBATCH --output=outAug15-05.txt
+
+
+../../bin/giftCycle -e -f -k ../Input/key128Aug15.txt -t ../Input/plain32Aug15-05.txt
