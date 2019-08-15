@@ -1,0 +1,61 @@
+---------------------------------------
+PRESENT Commandline Tool v2.1
+Thomas Siebert, thomas.siebert@rub.de
+Edited to GIFT Commandline Tool v1.0
+William Unger, williamunger@u.boisesate.edu
+---------------------------------------
+
+Starting values
+Plaintext: 0000000048675313 
+Given Key (128bit): 0011002200330044 0055006600770088
+
+Starting encryption...
+Entered 32 bit cycle mode
+Index at: 5000000
+Index at: 10000000
+Index at: 15000000
+Index at: 20000000
+Index at: 25000000
+Index at: 30000000
+Index at: 35000000
+Index at: 40000000
+Index at: 45000000
+Index at: 50000000
+Index at: 55000000
+Index at: 60000000
+Index at: 65000000
+Index at: 70000000
+Index at: 75000000
+Index at: 80000000
+Index at: 85000000
+Index at: 90000000
+Index at: 95000000
+Index at: 100000000
+Index at: 105000000
+Index at: 110000000
+Index at: 115000000
+Index at: 120000000
+Index at: 125000000
+Index at: 130000000
+Index at: 135000000
+Index at: 140000000
+Index at: 145000000
+Index at: 150000000
+Index at: 155000000
+Index at: 160000000
+Index at: 165000000
+Index at: 170000000
+Index at: 175000000
+Index at: 180000000
+Index at: 185000000
+Index at: 190000000
+Index at: 195000000
+Index at: 200000000
+Index at: 205000000
+Index at: 210000000
+Index at: 215000000
+Index at: 220000000
+Index at: 225000000
+Index at: 230000000
+Index at: 235000000
+Cycle length 236185246
