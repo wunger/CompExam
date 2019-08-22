@@ -203,7 +203,7 @@ encrypt(uint64_t in, uint64_t* subkey, uint16_t Rounds, _Bool Roundwise)
 
 #define out in
     uint16_t RoundNr;
-    uint64_t text;
+    uint64_t text = in;
 
     if (Roundwise)
         v_enc_start(in);
@@ -214,15 +214,15 @@ encrypt(uint64_t in, uint64_t* subkey, uint16_t Rounds, _Bool Roundwise)
 #define PBit temp
 
         if (Roundwise)
-            v_roundstart(RoundNr, subkey[RoundNr - 1]);
+        {
+            //v_roundstart(RoundNr, subkey[RoundNr - 1]);
+            printf("Round %d Starting:\n", (RoundNr - 1));
+        }
 
         //----------------------------------
         // Xor with roundkey
         //----------------------------------
-        text = base3Add(in, subkey[RoundNr - 1]);
-
-        if (Roundwise)
-            v_after_xor(text);
+        
 
         //----------------------------------
         // S-Boxes
@@ -250,10 +250,15 @@ encrypt(uint64_t in, uint64_t* subkey, uint16_t Rounds, _Bool Roundwise)
 
         if (Roundwise)
             v_after_p(in);
+        
+        text = base3Add(out, subkey[RoundNr - 1]);
+
+        if (Roundwise)
+            v_after_xor(text);
 
     } // End "for"
 
-    text = base3Add(in, subkey[RoundNr - 1]);
+    //text = base3Add(in, subkey[RoundNr - 1]);
 
     if (Roundwise)
         v_enc_final(text, subkey[RoundNr - 1]);
@@ -389,7 +394,7 @@ decrypt(uint64_t in, uint64_t* subkey, uint16_t Rounds, _Bool Roundwise)
     if (Roundwise)
         v_dec_start(in);
 
-    for (RoundNr = 1; RoundNr <= Rounds; RoundNr++) { // Start "for"
+    for (RoundNr = 2; RoundNr <= Rounds; RoundNr++) { // Start "for"
         //uint64_t key_temp;
         uint16_t temp;
 #define SboxNr temp
@@ -438,7 +443,7 @@ decrypt(uint64_t in, uint64_t* subkey, uint16_t Rounds, _Bool Roundwise)
     if (Roundwise)
         v_final();
 
-    return text;
+    return out;
 }
 
 uint64_t*
