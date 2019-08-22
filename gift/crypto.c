@@ -551,7 +551,7 @@ decrypt128(uint64_t  inHigh,
 
     // XOR operation
 
-    for (RoundNr = 1; RoundNr <= Rounds; RoundNr++) {
+    for (RoundNr = 2; RoundNr <= Rounds; RoundNr++) {
         if (Roundwise)
             v_roundstart128(RoundNr,
                             subkey[(2 * Rounds) - (2 * (RoundNr)) + 1],
@@ -615,8 +615,8 @@ decrypt128(uint64_t  inHigh,
     if (Roundwise)
         v_final();
 
-    retVal[1] = textHigh;
-    retVal[0] = textLow;
+    retVal[1] = outHigh;
+    retVal[0] = outLow;
 
     return retVal;
 }
