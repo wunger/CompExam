@@ -27,7 +27,7 @@ key_schedule(uint64_t key_high,
              _Bool    Output)
 {
     //uint64_t temp64;
-    uint64_t i;
+    int i;
 
     uint64_t* subkey = (uint64_t*)malloc(Rounds * sizeof(uint64_t));
 
@@ -284,8 +284,8 @@ encrypt128(uint64_t  inHigh,
 #define outHigh inHigh
 #define outLow inLow
     uint16_t RoundNr;
-    uint64_t textHigh;
-    uint64_t textLow;
+    uint64_t textHigh = inHigh;
+    uint64_t textLow = inLow;
 
     if (Roundwise)
         v_enc_start128(inHigh, inLow);
@@ -299,15 +299,17 @@ encrypt128(uint64_t  inHigh,
         // printf("Round %u round key %016"PRIx64" %016"PRIx64 "\n\n", RoundNr,
         // subkey[2*(RoundNr-1)+1], subkey[2*(RoundNr-1)]);
         if (Roundwise)
+        {
+            /*
             v_roundstart128(RoundNr,
                             subkey[2 * (RoundNr - 1) + 1],
                             subkey[2 * (RoundNr - 1)]);
+                            */
+            printf("Starting round %d\n", (RoundNr -1));
+        }
+        
 
-        textLow  = base3Add(inLow, subkey[2 * (RoundNr - 1)]);
-        textHigh = base3Add(inHigh, subkey[2 * (RoundNr - 1) + 1]);
-
-        if (Roundwise)
-            v_after_xor128(textHigh, textLow);
+        
         // printf("Encryption round %i key low index:%i key high index
         // %i\n",RoundNr, (2*(RoundNr-1)),(2*(RoundNr-1)+1));
 
@@ -361,12 +363,18 @@ encrypt128(uint64_t  inHigh,
         }
         if (Roundwise)
             v_after_p128(inHigh, inLow);
+        
+        textLow  = base3Add(outLow, subkey[2 * (RoundNr - 1)]);
+        textHigh = base3Add(outHigh, subkey[2 * (RoundNr - 1) + 1]);
+
+        if (Roundwise)
+            v_after_xor128(textHigh, textLow);
     }
     // printf("Encryption final XOR round %i key low index:%i key high index
     // %i\n",RoundNr, (2*(RoundNr-1)),(2*(RoundNr-1)+1));
         
-    retVal[0] = base3Add(inLow, subkey[2 * (RoundNr - 1)]);
-    retVal[1] = base3Add(inHigh, subkey[2 * (RoundNr - 1) + 1]);
+    retVal[0] = textLow;
+    retVal[1] = textHigh;
 
     if (Roundwise)
         v_enc_final128(retVal[1],
@@ -467,7 +475,7 @@ decrypt128(uint64_t  inHigh,
 
     // XOR operation
 
-    for (RoundNr = 1; RoundNr <= Rounds; RoundNr++) {
+    for (RoundNr = 2; RoundNr <= Rounds; RoundNr++) {
         if (Roundwise)
             v_roundstart128(RoundNr,
                             subkey[(2 * Rounds) - (2 * (RoundNr)) + 1],
@@ -533,8 +541,8 @@ decrypt128(uint64_t  inHigh,
     if (Roundwise)
         v_final();
 
-    retVal[1] = textHigh;
-    retVal[0] = textLow;
+    retVal[1] = outHigh;
+    retVal[0] = outLow;
 
     return retVal;
 }
